@@ -8,11 +8,11 @@
 
 
     <select id="selectById" parameterType="int" resultType="com.customize.mybatis.entity.User">
-         select  * from t_user where id=#{id}
+         select  id,user_name from t_user where id=#{id}
     </select>
 
     <select id="selectAll" resultType="com.customize.mybatis.entity.User">
-        select  * from t_user
+        select  id,user_name   from t_user
     </select>
 
 
