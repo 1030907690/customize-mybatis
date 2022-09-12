@@ -2,6 +2,7 @@ package com.customize.mybatis.factory;
 
 import com.customize.mybatis.configuration.Configuration;
 import com.customize.mybatis.configuration.MappedStatement;
+import com.customize.mybatis.sqlsession.DefaultSqlSession;
 import com.customize.mybatis.sqlsession.SqlSession;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -103,6 +104,6 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
     @Override
     public SqlSession openSession() {
-        return null;
+        return new DefaultSqlSession(configuration);
     }
 }
