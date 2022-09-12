@@ -16,34 +16,39 @@ public class SimpleExecutor implements Executor {
     }
 
     @Override
-    public <E> List<E> query(MappedStatement mappedStatement, Object parameter) {
-        List<E> ret = new ArrayList<>();
+    public <E> List<E> query(MappedStatement mappedStatement, Object[] parameter) {
+
         try {
             Class.forName(configuration.getJdbcDriver());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
         Connection conn = null;
+        PreparedStatement preparedStatement = null;
         try {
+            List<E> ret = new ArrayList<>();
             conn = DriverManager.getConnection(configuration.getJdbcUrl(), configuration.getJdbcName(), configuration.getJdbcPassword());
             String regex = "#\\{([^}])*\\}";
             String sql = mappedStatement.getSql().replaceAll(regex, "?");
-            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement = conn.prepareStatement(sql);
             setParameter(preparedStatement, parameter);
             ResultSet resultSet = preparedStatement.executeQuery();
             handlerResult(resultSet, ret, mappedStatement.getResultType());
-            preparedStatement.close();
+            return ret;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             try {
-                conn.close();
+                if (null != preparedStatement) {
+                    preparedStatement.close();
+                }
+                if (null != conn) {
+                    conn.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
-
         return null;
     }
 
@@ -67,14 +72,20 @@ public class SimpleExecutor implements Executor {
         }
     }
 
-    private void setParameter(PreparedStatement preparedStatement, Object parameter) {
-        if (parameter instanceof Integer) {
-            try {
-                preparedStatement.setInt(1, ((Integer) parameter).intValue());
-            } catch (SQLException e) {
-                e.printStackTrace();
+    private void setParameter(PreparedStatement preparedStatement, Object[] parameter) {
+        if (null != parameter && parameter.length > 0) {
+            for (Object param : parameter) {
+                if (param instanceof Integer) {
+                    try {
+                        preparedStatement.setInt(1, ((Integer) param).intValue());
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //...省略其他类型...
             }
+
         }
-        //...省略其他类型...
+
     }
 }

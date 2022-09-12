@@ -69,10 +69,11 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
             String resultType = ele.attribute("resultType").getData().toString();
             String sql = ele.getData().toString();
 
+            mappedStatement.setNamespace(namespace);
             mappedStatement.setId(namespace + "."+id);
             mappedStatement.setResultType(resultType);
             mappedStatement.setSql(sql);
-            configuration.getMappedStatement().put(mappedStatement.getNamespace(),mappedStatement);
+            configuration.getMappedStatement().put(mappedStatement.getId(),mappedStatement);
 
         }
     }

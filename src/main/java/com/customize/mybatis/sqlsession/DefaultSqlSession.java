@@ -22,7 +22,7 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
-    public <T> T selectOne(String statement, Object parameter) {
+    public <T> T selectOne(String statement, Object [] parameter) {
         List<T> list = this.selectList(statement, parameter);
         if (!CollectionUtils.isEmpty(list)) {
             if (list.size() > 1) {
@@ -35,9 +35,10 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
-    public <T> List<T> selectList(String statement, Object parameter) {
+    public <T> List<T> selectList(String statement, Object [] parameter) {
         MappedStatement mappedStatement = configuration.getMappedStatement().get(statement);
-        return executor.query(mappedStatement, parameter);
+        List<T> query = executor.query(mappedStatement, parameter);
+        return query;
     }
 
     @Override
