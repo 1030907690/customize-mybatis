@@ -1,5 +1,7 @@
 package com.customize.mybatis.configuration;
 
+import com.customize.mybatis.mapping.SqlCommandType;
+
 public class MappedStatement {
 
     private String namespace;
@@ -7,6 +9,17 @@ public class MappedStatement {
     private  String resultType;
 
     private String sql;
+
+    private SqlCommandType sqlCommandType;
+
+
+    public SqlCommandType getSqlCommandType() {
+        return sqlCommandType;
+    }
+
+    public void setSqlCommandType(SqlCommandType sqlCommandType) {
+        this.sqlCommandType = sqlCommandType;
+    }
 
     public String getNamespace() {
         return namespace;

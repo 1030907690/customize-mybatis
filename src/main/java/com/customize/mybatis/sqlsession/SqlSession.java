@@ -1,5 +1,7 @@
 package com.customize.mybatis.sqlsession;
 
+import com.customize.mybatis.configuration.Configuration;
+
 import java.util.List;
 
 public interface SqlSession {
@@ -10,4 +12,5 @@ public interface SqlSession {
 
     <T> T getMapper(Class<T> type);
 
+    Configuration getConfiguration();
 }

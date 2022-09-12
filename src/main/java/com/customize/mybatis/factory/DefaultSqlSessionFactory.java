@@ -2,6 +2,7 @@ package com.customize.mybatis.factory;
 
 import com.customize.mybatis.configuration.Configuration;
 import com.customize.mybatis.configuration.MappedStatement;
+import com.customize.mybatis.mapping.SqlCommandType;
 import com.customize.mybatis.sqlsession.DefaultSqlSession;
 import com.customize.mybatis.sqlsession.SqlSession;
 import org.dom4j.Document;
@@ -56,26 +57,25 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
         Element element = document.getRootElement();
         String namespace = element.attribute("namespace").getValue();
 
-        String [] tags = {"select","insert","update","delete"};
-        List<Element> all = new ArrayList<>();
-        for (String tag : tags) {
-            List<Element> elements = element.elements(tag);
-            all.addAll(elements);
+        SqlCommandType[] tags = SqlCommandType.values();
+        for (SqlCommandType tag : tags) {
+            List<Element> elements = element.elements(tag.name().toLowerCase());
+            for (Element ele : elements) {
+                MappedStatement mappedStatement = new MappedStatement();
+                String id = ele.attribute("id").getData().toString();
+                String resultType = ele.attribute("resultType").getData().toString();
+                String sql = ele.getData().toString();
+
+                mappedStatement.setNamespace(namespace);
+                mappedStatement.setId(namespace + "."+id);
+                mappedStatement.setResultType(resultType);
+                mappedStatement.setSql(sql);
+                mappedStatement.setSqlCommandType(tag);
+                configuration.getMappedStatement().put(mappedStatement.getId(),mappedStatement);
+            }
         }
 
-        for (Element ele : all) {
-            MappedStatement mappedStatement = new MappedStatement();
-            String id = ele.attribute("id").getData().toString();
-            String resultType = ele.attribute("resultType").getData().toString();
-            String sql = ele.getData().toString();
 
-            mappedStatement.setNamespace(namespace);
-            mappedStatement.setId(namespace + "."+id);
-            mappedStatement.setResultType(resultType);
-            mappedStatement.setSql(sql);
-            configuration.getMappedStatement().put(mappedStatement.getId(),mappedStatement);
-
-        }
     }
 
     private void loadDbInfo() {
